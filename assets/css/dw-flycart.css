@@ -1,0 +1,567 @@
+
+
+/* ===========================
+   Designit Wise â€¢ Flycart CSS
+   Target: #dw-flycart and descendants only
+   =========================== */
+
+:root {
+  /* Palette */
+  --dw-bg: #ffffff;
+  --dw-surface: #f7f8fa;
+  --dw-text: #0b1020;
+  --dw-text-muted: #5b6275;
+  --dw-border: #e5e7eb;
+  --dw-accent: #2f67ff;
+  --dw-accent-contrast: #ffffff;
+  --dw-danger: #ef4444;
+
+  /* Radii & shadows */
+  --dw-radius: 14px;
+  --dw-radius-sm: 10px;
+  --dw-shadow: 0 10px 30px rgba(17, 24, 39, 0.14);
+
+  /* Sizing & spacing */
+  --dw-width: min(420px, 100vw);
+  --dw-header-h: 64px;
+  --dw-footer-h: 124px;
+  --dw-pad: 16px;
+  --dw-gap: 14px;
+
+  /* Typography */
+  --dw-font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+  --dw-fs-sm: 0.875rem;
+  --dw-fs-xs: 0.8125rem;
+  --dw-fs-lg: 1.125rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --dw-bg: #0f1320;
+    --dw-surface: #141a2c;
+    --dw-text: #e8ecf7;
+    --dw-text-muted: #b1b7c9;
+    --dw-border: #232a42;
+    --dw-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+  }
+}
+
+/* Container (flyout) */
+#dw-flycart.dw-flycart {
+  position: fixed;
+  inset: 0 0 0 auto;               /* stick to right */
+  width: var(--dw-width);
+  max-width: 100%;
+  height: 100vh;
+  background: var(--dw-bg);
+  color: var(--dw-text);
+  box-shadow: var(--dw-shadow);
+  border-left: 1px solid var(--dw-border);
+  z-index: 9999;
+  display: grid;
+  grid-template-rows: var(--dw-header-h) 1fr;
+  font-family: var(--dw-font);
+  transform: translateX(0);
+  transition: transform 280ms cubic-bezier(.2,.7,.2,1), opacity 180ms ease;
+}
+
+#dw-flycart.dw-flycart[aria-hidden="true"] {
+  transform: translateX(8%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Optional subtle glass edge on the left */
+#dw-flycart.dw-flycart::before {
+  content: "";
+  position: absolute;
+  left: -1px; top: 0; bottom: 0;
+  width: 1px;
+  background: linear-gradient(to bottom, transparent, rgba(0,0,0,.06), transparent);
+  pointer-events: none;
+}
+
+/* Header */
+.dw-flycart-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 calc(var(--dw-pad) + 4px);
+  border-bottom: 1px solid var(--dw-border);
+  background: var(--dw-bg);
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+.dw-flycart-header h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0;
+  letter-spacing: .2px;
+}
+
+.dw-flycart-close {
+  appearance: none;
+  border: 1px solid var(--dw-border);
+  background: var(--dw-surface);
+  color: var(--dw-text);
+  width: 36px; height: 36px;
+  border-radius: 999px;
+  display: grid; place-items: center;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  transition: transform .18s ease, background-color .18s ease, border-color .18s ease;
+}
+.dw-flycart-close:hover { background: var(--dw-bg); transform: translateY(-1px); }
+.dw-flycart-close:active { transform: translateY(0); }
+.dw-flycart-close:focus-visible {
+  outline: 2px solid var(--dw-accent);
+  outline-offset: 2px;
+}
+
+/* Body area (scroll) */
+.dw-flycart-body {
+  position: relative;
+  overflow: auto;
+  padding: var(--dw-pad);
+  padding-bottom: calc(var(--dw-footer-h) + var(--dw-pad));
+  background: linear-gradient(var(--dw-bg), var(--dw-bg)) padding-box,
+              linear-gradient(180deg, var(--dw-bg) 0, var(--dw-surface) 100%) border-box;
+}
+
+/* Mini cart list reset */
+.dw-flycart .woocommerce-mini-cart {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--dw-gap);
+}
+
+/* Item card */
+.dw-flycart .woocommerce-mini-cart-item {
+  position: relative;
+  background: var(--dw-surface);
+  border: 1px solid var(--dw-border);
+  border-radius: var(--dw-radius);
+  padding: 12px 12px 12px 12px;
+  display: grid;
+  grid-template-columns: 72px 1fr auto;
+  gap: 12px;
+  align-items: start;
+}
+
+/* Remove (Ã—) */
+.dw-flycart .woocommerce-mini-cart-item .remove {
+  position: absolute;
+  top: 8px; right: 8px;
+  width: 28px; height: 28px;
+  border-radius: 999px;
+  display: grid; place-items: center;
+  text-decoration: none;
+  font-size: 18px;
+  line-height: 1;
+  color: var(--dw-text-muted);
+  background: transparent;
+  border: 1px solid transparent;
+  transition: background-color .18s ease, color .18s ease, border-color .18s ease, transform .18s ease;
+}
+.dw-flycart .woocommerce-mini-cart-item .remove:hover {
+  color: var(--dw-danger);
+  border-color: var(--dw-border);
+  background: color-mix(in srgb, var(--dw-danger) 6%, transparent);
+  transform: translateY(-1px);
+}
+.dw-flycart .woocommerce-mini-cart-item .remove:focus-visible {
+  outline: 2px solid var(--dw-accent);
+  outline-offset: 2px;
+}
+
+/* Product image */
+.dw-flycart .woocommerce-mini-cart-item img {
+  width: 72px; height: 72px;
+  object-fit: cover;
+  border-radius: var(--dw-radius-sm);
+  border: 1px solid var(--dw-border);
+  background: #fff0;
+}
+
+/* Product title link */
+.dw-flycart .woocommerce-mini-cart-item > a[href*="product"] {
+  grid-column: 2 / span 1;
+  font-weight: 600;
+  color: var(--dw-text);
+  text-decoration: none;
+  align-self: center;
+}
+.dw-flycart .woocommerce-mini-cart-item > a[href*="product"]:hover {
+  text-decoration: underline;
+}
+
+/* Variation (details) */
+.dw-flycart .woocommerce-mini-cart-item .variation {
+  grid-column: 2 / span 1;
+  margin: 6px 0 0 0;
+  background: transparent;
+  border-left: 3px solid var(--dw-border);
+  padding-left: 10px;
+}
+.dw-flycart .woocommerce-mini-cart-item .variation dt {
+  display: none; /* hide the stray ":" term */
+}
+.dw-flycart .woocommerce-mini-cart-item .variation dd {
+  margin: 0;
+  color: var(--dw-text-muted);
+  font-size: var(--dw-fs-sm);
+}
+.dw-flycart .woocommerce-price-amount,
+.dw-flycart .woocommerce-Price-amount {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Quantity + line price (right column) */
+.dw-flycart .woocommerce-mini-cart-item .quantity {
+  grid-column: 3 / span 1;
+  justify-self: end;
+  color: var(--dw-text-muted);
+  font-size: var(--dw-fs-sm);
+  background: var(--dw-bg);
+  border: 1px solid var(--dw-border);
+  border-radius: 10px;
+  padding: 6px 10px;
+  white-space: nowrap;
+}
+
+
+/* Total / Subtotal */
+.dw-flycart .woocommerce-mini-cart__total {
+  position: sticky!important;
+  bottom: calc(var(--dw-footer-h) + 8px);
+  z-index: 1;
+  margin: 10px 0 0 0;
+  padding: 12px;
+  background: var(--dw-bg);
+  border: 1px solid var(--dw-border);
+  border-radius: var(--dw-radius);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: var(--dw-fs-lg);
+  font-weight: 700;
+}
+
+/* Upsell block */
+.dw-flycart .extra-upsell {
+  margin-top: 14px;
+  border: 1px solid var(--dw-border);
+  border-radius: var(--dw-radius);
+  background: var(--dw-surface);
+  overflow: hidden;
+}
+.dw-flycart .extra-upsell-head {
+  display: flex; align-items: center; gap: 8px;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--dw-border);
+}
+.dw-flycart .extra-upsell-title {
+  margin: 0; font-size: 1rem; font-weight: 700; color:#cccccc;
+}
+.dw-flycart .extra-upsell-optional {
+  margin-left: auto; color: var(--dw-text-muted); font-size: var(--dw-fs-xs);
+}
+.dw-flycart .extra-list {
+  display: grid; gap: 8px;
+  padding: 12px 14px 14px;
+}
+.dw-flycart .extra-list label {
+  display: grid;
+  grid-template-columns: 22px 1fr;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--dw-border);
+  border-radius: 10px;
+  cursor: pointer;
+  background: var(--dw-bg);
+  transition: border-color .18s ease, transform .18s ease, box-shadow .18s ease;
+}
+.dw-flycart .extra-list label:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(17,24,39,0.06);
+}
+.dw-flycart .extra-list input[type="checkbox"] {
+  width: 18px; height: 18px;
+  accent-color: var(--dw-accent);
+  cursor: pointer;
+}
+.dw-flycart .extra-list label span:first-of-type {
+  font-weight: 700;
+}
+.dw-flycart .extra-list label span:last-of-type {
+  color: var(--dw-text-muted);
+}
+
+.extra-cover-wrap {padding:12px;}
+
+/* Buttons area */
+@media (max-width: 480px) {
+  .woocommerce-mini-cart__buttons {
+    position: fixed;
+    bottom: calc(env(safe-area-inset-bottom, 0) + 40px);
+    margin-bottom:100px!important;
+  }
+}
+
+
+.dw-flycart .woocommerce-mini-cart__buttons {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  width: var(--dw-width);
+  max-width: 100%;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--dw-bg) 85%, transparent), var(--dw-bg));
+  border-top: 1px solid var(--dw-border);
+  padding: 14px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  height: var(--dw-footer-h);
+  box-sizing: border-box;
+}
+
+.dw-flycart .woocommerce-mini-cart__buttons .button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 46px;
+  padding: 0 16px;
+  border-radius: 12px;
+  border: 1px solid var(--dw-border);
+  background: var(--dw-bg);
+  color: var(--dw-text);
+  text-decoration: none;
+  font-weight: 600;
+  transition: transform .18s ease, background-color .18s ease, border-color .18s ease, box-shadow .18s ease;
+}
+.dw-flycart .woocommerce-mini-cart__buttons .button:hover {
+  transform: translateY(-1px);
+  background: color-mix(in srgb, var(--dw-bg) 92%, var(--dw-surface));
+  box-shadow: 0 8px 18px rgba(17,24,39,0.08);
+}
+.dw-flycart .woocommerce-mini-cart__buttons .button:focus-visible {
+  outline: 2px solid var(--dw-accent);
+  outline-offset: 2px;
+}
+
+.dw-flycart .woocommerce-mini-cart__buttons .checkout {
+  background: var(--dw-accent);
+  color: var(--dw-accent-contrast);
+  border-color: color-mix(in srgb, var(--dw-accent) 60%, var(--dw-border));
+}
+.dw-flycart .woocommerce-mini-cart__buttons .checkout:hover {
+  background: color-mix(in srgb, var(--dw-accent) 86%, black 0%);
+}
+
+/* Price emphasis inside amounts */
+.dw-flycart .amount bdi,
+.dw-flycart .woocommerce-Price-amount bdi {
+  font-weight: 700;
+}
+
+/* Links & text defaults inside flycart */
+#dw-flycart a { color: inherit; }
+#dw-flycart p {/* margin: 0; */}
+
+/* Scrollbar (WebKit) */
+#dw-flycart.dw-flycart ::-webkit-scrollbar { width: 10px; }
+#dw-flycart.dw-flycart ::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--dw-text) 18%, transparent);
+  border-radius: 999px;
+}
+#dw-flycart.dw-flycart ::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Responsive tweaks */
+@media (max-width: 420px) {
+  .dw-flycart .woocommerce-mini-cart-item {
+    grid-template-columns: 64px 1fr;
+  }
+  .dw-flycart .woocommerce-mini-cart-item .quantity {
+    grid-column: 2 / span 1;
+    justify-self: start;
+    margin-top: 4px;
+  }
+}
+
+/* Motion-safe */
+@media (prefers-reduced-motion: reduce) {
+  #dw-flycart.dw-flycart,
+  .dw-flycart .woocommerce-mini-cart-item .remove,
+  .dw-flycart .woocommerce-mini-cart__buttons .button,
+  .dw-flycart .extra-list label,
+  .dw-flycart .dw-flycart-close {
+    transition: none !important;
+  }
+}
+
+/* Utility: hide Woo's stray bullet dots if any */
+.dw-flycart .product_list_widget li::marker { content: ""; }
+
+/* Utility: ensure images never overflow */
+.dw-flycart img { max-width: 100%; height: auto; }
+
+/* Utility: ensure long variation text wraps nicely */
+.dw-flycart .variation dd p { margin: 0; line-height: 1.35; }
+
+/* Optional: subtle card hover lift */
+.dw-flycart .woocommerce-mini-cart-item:hover {
+  box-shadow: 0 10px 18px rgba(17,24,39,0.06);
+  transform: translateY(-1px);
+}
+
+/* Make currency symbol slightly quieter */
+.dw-flycart .woocommerce-Price-currencySymbol {
+  opacity: .9;
+  margin-right: 2px;
+}
+
+
+/* CSS */
+.dw-cart-count,
+#dw-cart-count {
+  --size: 16px;               /* diameter of the circle */
+  display: inline-flex;       /* keeps it inline and centers content */
+  align-items: center;
+  justify-content: center;
+  min-width: var(--size);
+  height: var(--size);
+  padding: 0 4px;             /* small horizontal padding so 2+ digits fit */
+  border-radius: 999px;       /* perfect circle */
+  background-color: #e02424;  /* red background (can change to your brand red) */
+  color: #fff;                /* white text */
+  font-size: 11px;            /* small text */
+  line-height: 1;
+  font-weight: 600;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.08); /* subtle lift */
+  text-align: center;
+  vertical-align: top;        /* aligns nicely with icons/text */
+  transform: translateY(-2px);/* small vertical alignment tweak for icons */
+  pointer-events: none;       /* so clicks go to parent button (optional) */
+  box-sizing: border-box;
+}
+
+/* If you want the counter hidden when zero (recommended) */
+.dw-cart-count[data-count="0"],
+#dw-cart-count[data-count="0"] {
+  display: none;
+}
+
+/* Make it slightly larger for 2+ digits so it doesn't squish */
+.dw-cart-count[data-count="10"],
+.dw-cart-count[data-count^="1"][data-count*="0"],
+#dw-cart-count[data-count="10"],
+#dw-cart-count[data-count^="1"][data-count*="0"] {
+  min-width: 20px;
+  padding: 0 6px;
+}
+
+/* Optional: a small pulse when count updates */
+.dw-cart-count.update {
+  animation: dw-count-pop .28s cubic-bezier(.2,.9,.3,1);
+}
+@keyframes dw-count-pop {
+  0%   { transform: scale(.8) translateY(-2px); }
+  60%  { transform: scale(1.08) translateY(-2px); }
+  100% { transform: scale(1) translateY(-2px); }
+}
+
+/* hide quantity fly out  */
+/* Cart page rows */
+#dw-flycart .quantity { }
+
+.woocommerce-placeholder wp-post-image
+
+/* Hide the text node "Donation" for links that contain the donation image (modern browsers) */
+a:has(> img.donation-post-thumb) {
+  font-size: 0;
+  line-height: 0;
+}
+
+/* Ensure the image itself displays normally */
+a:has(> img.donation-post-thumb) img.donation-post-thumb {
+  display: block;    /* keeps layout predictable */
+  line-height: normal;
+}
+
+/* Fixed "View basket / Checkout" buttons pinned to viewport bottom */
+.woocommerce-mini-cart__buttons {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 99999;               /* keep it above page content */
+  background: #fff;             /* match your mini-cart background */
+  box-shadow: 0 -6px 18px rgba(0,0,0,0.12);
+  padding: 12px 16px;
+  box-sizing: border-box;
+}
+
+/* Keep buttons inline on wide screens, stack on small screens */
+.woocommerce-mini-cart__buttons .button {
+  display: inline-block;
+  margin-right: 10px;
+}
+.woocommerce-mini-cart__buttons .button:last-child {
+  margin-right: 0;
+}
+
+/* Mobile: make buttons stack and stretch full width for big tap targets */
+@media (max-width: 768px) {
+  .woocommerce-mini-cart__buttons { padding: 12px; }
+  .woocommerce-mini-cart__buttons .button {
+    display: block;
+    width: 100%;
+    margin: 6px 0;
+  }
+}
+
+/* Prevent content behind the fixed bar being hidden: add bottom padding to mini-cart content */
+.woocommerce-mini-cart {
+  padding-bottom: 72px; /* should be >= height of .woocommerce-mini-cart__buttons */
+}
+
+/* hide text inside anchors that contain the donation-post-thumb image */
+a:has(img.donation-post-thumb) { font-size: 0; line-height: 0; }
+a:has(img.donation-post-thumb) img { font-size: initial; line-height: initial; }
+
+/* Further Support block */
+.dw-support-block { padding:16px 0; border-top:0px solid #e5e5e5; margin-top:12px; margin-bottom:100px; }
+.dw-support-title { margin:0 0 8px; font-weight:700; color:#cccccc; }
+.dw-support-list { display:grid; grid-template-columns: 1fr 1fr; gap:10px 16px; }
+.dw-support-row { display:flex; align-items:center; gap:10px; }
+.dw-support-amount { font-weight:700; margin-right:2px; }
+.dw-support-label { text-transform:uppercase; letter-spacing:.5px; }
+@media (max-width: 480px){
+  .dw-support-list { grid-template-columns: 1fr; }
+}
+
+.dw-total-loading .dw-total-status {
+  display: inline-block !important;
+  opacity: 0.85;
+}
+.dw-total-status::after {
+  content: '';
+  display: inline-block;
+  width: .75em;
+  height: .75em;
+  margin-left: .35em;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  animation: dwspin 0.7s linear infinite;
+  vertical-align: -0.1em;
+}
+@keyframes dwspin { to { transform: rotate(360deg); } }
