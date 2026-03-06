@@ -72,8 +72,8 @@ add_action('add_meta_boxes', function () {
             <?php
         },
         $cpt,
-        'side',
-        'default'
+        'normal',
+        'high'
     );
 });
 
@@ -104,6 +104,26 @@ if (!function_exists('dw_price')) {
         return $currency_symbol . number_format_i18n((float)$amount, 2);
     }
 }
+
+// ---------- Admin: Gutenberg sidebar script ----------
+add_action('admin_enqueue_scripts', function ($hook) {
+    if ($hook !== 'post.php' && $hook !== 'post-new.php') return;
+    $screen = get_current_screen();
+    if (!$screen || $screen->post_type !== 'donation') return;
+
+    // Correct paths: assets live in plugin root `assets/js/...`
+    $script_path = plugin_dir_path(__DIR__ . '/../donations-cpt.php') . 'assets/js/donation-goal-sidebar.js';
+    $script_url  = plugins_url('assets/js/donation-goal-sidebar.js', __DIR__ . '/../donations-cpt.php');
+    if (!file_exists($script_path)) return;
+
+    wp_enqueue_script(
+        'dw-donation-goal-sidebar',
+        $script_url,
+        ['wp-plugins','wp-edit-post','wp-element','wp-components','wp-data'],
+        filemtime($script_path),
+        true
+    );
+});
 
 // ===== AUTO-CALC: Raised from WooCommerce orders (cached) =====
 
