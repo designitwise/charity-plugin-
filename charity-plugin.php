@@ -1,3 +1,6 @@
+// Load AJAX handlers for flyout billing form and mini billing details
+require_once __DIR__ . '/includes/ajax-flyout-billing.php';
+require_once __DIR__ . '/includes/ajax-mini-billing-details.php';
 <?php
 /**
  * Charity Donation Plugin
@@ -38,6 +41,7 @@ if ( defined( 'CHARITY_PLUGIN_LOADED' ) ) {
 	return;
 }
 define( 'CHARITY_PLUGIN_LOADED', true );
+
 
 /**
  * Bootstrap the plugin

@@ -397,9 +397,86 @@
 				} );
 
 				$container.append( $list );
+				// Add editable billing form (WooCommerce field IDs)
+				const $billing = $('<div class="mini-billing-info" style="margin-top:12px;">' +
+					'<h3>Billing Details</h3>' +
+					'<form id="mini-billing-form">' +
+						'<p>' +
+							'<label for="billing_first_name">First Name</label>' +
+							'<input type="text" id="billing_first_name" name="billing_first_name" value="" required>' +
+						'</p>' +
+						'<p>' +
+							'<label for="billing_last_name">Last Name</label>' +
+							'<input type="text" id="billing_last_name" name="billing_last_name" value="" required>' +
+						'</p>' +
+						'<p>' +
+							'<label for="billing_email">Email Address</label>' +
+							'<input type="email" id="billing_email" name="billing_email" value="" required>' +
+						'</p>' +
+						'<p>' +
+							'<label for="billing_phone">Phone Number</label>' +
+							'<input type="tel" id="billing_phone" name="billing_phone" value="">' +
+						'</p>' +
+						'<button type="submit">Save</button>' +
+					'</form>' +
+				'</div>');
+				$container.append($billing);
+				// Prefill form via AJAX
+				function prefillBillingForm() {
+					fetch((window.ajaxurl || (window.CharityDonations && window.CharityDonations.ajax_url)) + '?action=get_mini_billing_details')
+						.then(response => response.json())
+						.then(data => {
+							if (data.success) {
+								const d = data.data;
+								$('#billing_first_name').val(d.first_name || '');
+								$('#billing_last_name').val(d.last_name || '');
+								$('#billing_email').val(d.email || '');
+								$('#billing_phone').val(d.phone || '');
+							}
+						});
+				}
+				prefillBillingForm();
+				// AJAX submit for billing form
+				$(document).off('submit', '#mini-billing-form').on('submit', '#mini-billing-form', function(e) {
+					e.preventDefault();
+					const formData = new FormData(this);
+					formData.append('action', 'save_flyout_billing');
+					fetch(window.ajaxurl, {
+						method: 'POST',
+						body: formData
+					})
+					.then(response => response.json())
+					.then(data => {
+						if (data.success) {
+							alert('Billing details saved!');
+							prefillBillingForm();
+						} else {
+							alert('There was an error.');
+						}
+					});
+				});
 				// append to body as staging area
 				$( 'body' ).append( $container );
 			}
+
+			// AJAX submit for billing form
+			$(document).off('submit', '#mini-billing-form').on('submit', '#mini-billing-form', function(e) {
+				e.preventDefault();
+				const formData = new FormData(this);
+				formData.append('action', 'save_flyout_billing');
+				fetch(window.ajaxurl, {
+					method: 'POST',
+					body: formData
+				})
+				.then(response => response.json())
+				.then(data => {
+					if (data.success) {
+						alert('Billing details saved!');
+					} else {
+						alert('There was an error.');
+					}
+				});
+			});
 
 			// Placement logic tries multiple selectors and moves the container
 			const placeExtras = function() {
